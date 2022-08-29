@@ -3,7 +3,9 @@
 
 .packages
 .pub/
-
+.idea
+**/**.lock
+**/.flutter-plugins**
 build/
 ios/.generated/
 ios/Flutter/Generated.xcconfig

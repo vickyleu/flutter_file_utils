@@ -1,4 +1,6 @@
 // framework
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 // packages
@@ -57,19 +59,17 @@ class MyApp extends StatelessWidget {
                           child: Text("Nothing!"),
                         );
               }
-              return null; // unreachable
             },
           )),
     );
   }
 
-  _files() async {
+  Future<List<File>>_files() async {
     var root = await getExternalStorageDirectory();
+    if(root==null)return [];
     var fm = FileManager(root: root);
-
-    List founds = await fm.recentFilesAndDirs(20,
-        sortedBy: FlutterFileUtilsSorting.Size, reversed: false);
-
+    List<File> founds = await fm.recentFilesAndDirs(20,
+        sortedBy: FlutterFileUtilsSorting.Size, reversed: false) as List<File>;
     return founds;
   }
 }

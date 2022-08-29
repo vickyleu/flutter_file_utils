@@ -84,7 +84,7 @@ String getBaseName(String path, {bool extension: true}) {
 /// * lastAccessed
 /// * extension
 /// * path
-Future<Map> details(dynamic path) async {
+Future<Map?> details(dynamic path) async {
   HashMap _details = HashMap();
   if (path == null || (!path.existsSync() && !File(path).existsSync())) {
     print("file or dir does not exists");
@@ -138,7 +138,7 @@ Stream<List<FileSystemEntity>> fileStream(String path,
     recursive: false,
     keepHidden: false}) async* {
   Directory _path = Directory(path);
-  List<FileSystemEntity> _files = List<FileSystemEntity>();
+  List<FileSystemEntity> _files = <FileSystemEntity>[];
   try {
     // Checking if the target directory contains files inside or not!
     // so that [StreamBuilder] won't emit the same old data if there are
@@ -199,7 +199,7 @@ Stream<List<FileSystemEntity>> searchStream(dynamic path, String query,
 ///
 /// Supply path alone to create by already combined path, or path + filename
 /// to be combined
-Future<Directory> createFolderByPath(String path, {String folderName}) async {
+Future<Directory> createFolderByPath(String path, {String? folderName}) async {
   print("filesystem_utils->createFolderByPath: $folderName @ $path");
   var _directory;
 
@@ -208,7 +208,6 @@ Future<Directory> createFolderByPath(String path, {String folderName}) async {
   } else {
     _directory = Directory(path);
   }
-
   try {
     if (!_directory.existsSync()) {
       _directory.create();
@@ -217,7 +216,7 @@ Future<Directory> createFolderByPath(String path, {String folderName}) async {
     }
     return _directory;
   } catch (e) {
-    throw FileSystemException(e);
+    throw FileSystemException(e.toString());
   }
 }
 
@@ -233,7 +232,7 @@ Future<Directory> createFolderByPath(String path, {String folderName}) async {
 /// * `Directory: /lib/user/share`
 /// * `....`
 List<Directory> splitPathToDirectories(String fullPath) {
-  List<Directory> splittedPath = List();
+  List<Directory> splittedPath = [];
   Directory fullPathDir = Directory(fullPath);
   splittedPath.add(fullPathDir);
   for (int i = 0; i == pathlib.split(fullPath).length; i++) {
@@ -299,10 +298,10 @@ Future<File> cacheFile(String name) async {
 /// * sortedBy: [FlutterFileUtilsSorting]
 /// * [bool] reversed: in case parameter sortedBy is used
 Future<List<File>> listFiles(String path,
-    {List<String> extensions,
+    {List<String>? extensions,
     followsLinks = false,
     excludeHidden = false,
-    FlutterFileUtilsSorting sortedBy,
+    FlutterFileUtilsSorting? sortedBy,
     bool reversed: false}) async {
   List<File> files = [];
 
@@ -338,8 +337,8 @@ Future<List<File>> listFiles(String path,
   } catch (error) {
     throw FileManagerError(error.toString());
   }
-  if (files != null) {
-    return sortBy(files, sortedBy, reversed: reversed);
+  if (sortedBy != null) {
+    return sortBy(files, sortedBy, reversed: reversed) as List<File>;
   }
 
   return files;
@@ -354,11 +353,11 @@ Future<List<File>> listFiles(String path,
 /// * [bool] reversed: in case parameter sortedBy is used
 /// * examples: ["Android", "Download", "DCIM", ....]
 Future<List<String>> listFolders(Directory path,
-    {List<String> excludedFolders,
-    List<String> excludedPaths,
+    {List<String>? excludedFolders,
+    List<String>? excludedPaths,
     bool excludeHidden: false,
     followLinks: false,
-    FlutterFileUtilsSorting sortedBy,
+    FlutterFileUtilsSorting? sortedBy,
     bool reversed: false}) async {
   List<String> folders = (await listDirectories(path,
           excludeHidden: excludeHidden,
@@ -378,7 +377,7 @@ Future<List<String>> listFolders(Directory path,
 Future<List<Directory>> listDirectories(Directory path,
     {excludeHidden: false,
     followLinks = false,
-    FlutterFileUtilsSorting sortedBy,
+    FlutterFileUtilsSorting? sortedBy,
     bool reversed: false}) async {
   List<Directory> directories = [];
   try {
@@ -403,8 +402,8 @@ Future<List<Directory>> listDirectories(Directory path,
   } catch (error) {
     throw FileManagerError(permissionMessage + error.toString());
   }
-  if (directories != null) {
-    return sortBy(directories, sortedBy);
+  if (sortedBy != null) {
+    return sortBy(directories, sortedBy) as List<Directory>;
   }
 
   return directories;
@@ -424,7 +423,7 @@ Future<void> deleteAll(List<FileSystemEntity> files) async {
 }
 
 /// Delete a directory recursively or not
-/// 
+///
 /// e.g:
 /// * deleteFile(/storage/emulated/0/myFile.txt")
 bool deleteDir(String path, {recursive: false}) {

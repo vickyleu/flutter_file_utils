@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_file_utils/flutter_file_utils.dart';
@@ -36,8 +37,9 @@ class MyFiles extends StatelessWidget {
     );
   }
  // get all files that match these extensions
-  Future _getSpecificFileTypes() async {
+  Future<List<File>> _getSpecificFileTypes() async {
     var root = await getExternalStorageDirectory();
+    if(root==null)return [];
     var files = await FileManager(root: root)
         .filesTree(extensions: ["txt", "3gp", "zip", "png"]);
     return files;

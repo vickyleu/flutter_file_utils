@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 // packages
 import 'package:flutter_file_utils/flutter_file_utils.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:simple_permissions/simple_permissions.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() => runApp(new HomePage());
 
@@ -25,8 +25,16 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
+  void initState() {
+    Permission.storage.request().then((value){
+      setState(() {
+
+      });
+    });
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
-    SimplePermissions.requestPermission(Permission.ReadExternalStorage);
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -53,8 +61,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Stream<FileSystemEntity> getFilteredPaths() async* {
+  Stream<FileSystemEntity?> getFilteredPaths() async* {
     var root = await getExternalStorageDirectory();
+    if(root==null) {
+      return;
+    }
     yield* FileManager(
             root: root,
             filter: SimpleFileFilter(

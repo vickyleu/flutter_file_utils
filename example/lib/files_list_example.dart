@@ -47,8 +47,9 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Future buildImages() async {
+  Future<List<File>> buildImages() async {
     var root = await getExternalStorageDirectory();
+    if(root==null)return [];
     List<File> files = await listFiles(root.path + "/DCIM/",
         extensions: ["png", "jpg"]);
 

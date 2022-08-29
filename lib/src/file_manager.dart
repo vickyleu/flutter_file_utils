@@ -24,21 +24,21 @@ final String permissionMessage = '''
 
 class FileManager {
   // The start point .
-  Directory root;
+  final Directory root;
 
-  FileFilter filter;
+  final FileFilter? filter;
 
-  FileManager({this.root, this.filter}) : assert(root != null);
+  FileManager({required this.root, this.filter}) : assert(root != null);
 
   /// * This function returns a [List] of [int howMany] of type [File] of recently created files.
   /// * [excludeHidded] if [true] hidden files will not be returned
   /// * sortedBy: [Sorting]
   /// * [bool] reversed: in case parameter sortedBy is used
-  Future<List<File>> recentFilesAndDirs(int count,
-      {List<String> extensions,
-      List<String> excludedPaths,
+  Future<List<dynamic>> recentFilesAndDirs(int count,
+      {List<String>? extensions,
+      List<String>? excludedPaths,
       excludeHidden: false,
-      FlutterFileUtilsSorting sortedBy,
+      FlutterFileUtilsSorting? sortedBy,
       bool reversed: false}) async {
     List<File> filesPaths = await filesTree(
         excludedPaths: excludedPaths,
@@ -68,10 +68,10 @@ class FileManager {
   /// * sortedBy: [FlutterFileUtilsSorting]
   /// * [bool] reversed: in case parameter sortedBy is used
   Future<List<Directory>> dirsTree(
-      {List<String> excludedPaths,
+      {List<String>? excludedPaths,
       bool followLinks: false,
       bool excludeHidden: false,
-      FlutterFileUtilsSorting sortedBy}) async {
+      FlutterFileUtilsSorting? sortedBy}) async {
     List<Directory> dirs = [];
 
     try {
@@ -110,8 +110,8 @@ class FileManager {
     } catch (error) {
       throw FileManagerError(permissionMessage + error.toString());
     }
-    if (dirs != null) {
-      return sortBy(dirs, sortedBy);
+    if (sortedBy != null) {
+      return sortBy(dirs, sortedBy) as List<Directory>;
     }
 
     return dirs;
@@ -123,11 +123,11 @@ class FileManager {
   /// * sortedBy: [Sorting]
   /// * [bool] reversed: in case parameter sortedBy is used
   Future<List<File>> filesTree(
-      {List<String> extensions,
-      List<String> excludedPaths,
+      {List<String>? extensions,
+      List<String>? excludedPaths,
       excludeHidden = false,
       bool reversed: false,
-      FlutterFileUtilsSorting sortedBy}) async {
+      FlutterFileUtilsSorting? sortedBy}) async {
     List<File> files = [];
 
     List<Directory> dirs = await dirsTree(
@@ -165,7 +165,7 @@ class FileManager {
     }
 
     if (sortedBy != null) {
-      return sortBy(files, sortedBy);
+      return sortBy(files, sortedBy) as List<File>;
     }
 
     return files;
@@ -181,7 +181,7 @@ class FileManager {
             .list(recursive: true, followLinks: followLinks)
             .transform(StreamTransformer.fromHandlers(
                 handleData: (FileSystemEntity fileOrDir, EventSink eventSink) {
-          if (filter.isValid(fileOrDir.absolute.path, root.absolute.path)) {
+          if (filter!.isValid(fileOrDir.absolute.path, root.absolute.path)) {
             eventSink.add(fileOrDir);
           }
         }));
@@ -206,12 +206,12 @@ class FileManager {
   /// * List<String> imagesPaths = await FileManager.search("myFile.png");
   Future<List<dynamic>> searchFuture(
     var keyword, {
-    List<String> excludedPaths,
+    List<String>? excludedPaths,
     filesOnly = false,
     dirsOnly = false,
-    List<String> extensions,
+    List<String> extensions = const <String>[],
     bool reversed: false,
-    FlutterFileUtilsSorting sortedBy,
+    FlutterFileUtilsSorting? sortedBy,
   }) async {
     print("Searching for: $keyword");
     // files that will be returned
@@ -267,8 +267,8 @@ class FileManager {
   /// * `List<String> imagesPaths = await FileManager.search("myFile.png").toList();`
   Stream<FileSystemEntity> search(
     var keyword, {
-    FileFilter searchFilter,
-    FlutterFileUtilsSorting sortedBy,
+    FileFilter? searchFilter,
+    FlutterFileUtilsSorting? sortedBy,
   }) async* {
     try {
       if (keyword.length == 0 || keyword == null) {
@@ -285,7 +285,7 @@ class FileManager {
       } else if (filter != null) {
         print("Using default filter");
         yield* root.list(recursive: true, followLinks: true).where((test) {
-          if (filter.isValid(test.absolute.path, root.absolute.path)) {
+          if (filter!.isValid(test.absolute.path, root.absolute.path)) {
             return getBaseName(test.path, extension: true).contains(keyword);
           }
           return false;

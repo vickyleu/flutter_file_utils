@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -41,8 +42,9 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Future buildImages() async {
+  Future<List<File>> buildImages() async {
     var root = await getExternalStorageDirectory();
+    if(root==null)return [];
     var files =
         await FileManager(root: root).filesTree(extensions: ["png", "jpg"]);
   

@@ -2,14 +2,15 @@
 import 'dart:io';
 
 // packages
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as pathlib;
 
 /// Return all **paths**
 Future<List<Directory>> getStorageList() async {
-  List<Directory> paths = await getExternalStorageDirectories();
-  List<Directory> filteredPaths = List<Directory>();
+  List<Directory>? paths = await getExternalStorageDirectories();
+  if(paths==null)return [];
+  List<Directory> filteredPaths = <Directory>[];
   for (Directory dir in paths) {
     filteredPaths
         .add(await getExternalStorageWithoutDataDir(dir.absolute.path));

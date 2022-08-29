@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_file_utils/flutter_file_utils.dart';
@@ -62,8 +63,9 @@ class _FilesSearchStateApp extends State<FilesSearchApp> {
     );
   }
 
-  Future getfiles(String searchString) async {
+  Future<List<FileSystemEntity>> getfiles(String searchString) async {
     var root = await getExternalStorageDirectory();
+    if(root==null)return [];
     var fm = FileManager(root: root);
     return await fm.search(searchString).toList();
   }

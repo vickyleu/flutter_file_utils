@@ -61,7 +61,6 @@ class MyApp extends StatelessWidget {
                           child: Text("Nothing!"),
                         );
               }
-              return null; // unreachable
             },
           )),
     );
